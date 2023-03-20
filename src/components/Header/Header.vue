@@ -6,6 +6,7 @@
       <el-menu-item index="subdivisionAll">Подразделения</el-menu-item>
       <el-menu-item index="positionAll">Должности</el-menu-item>
     </template>
+    <el-menu-item index="individualAll">Физические лица</el-menu-item>
     <el-menu-item index="employeeAll">Сотрудники</el-menu-item>
     <template v-if="client">
       <el-menu-item index="userAll">Пользователи</el-menu-item>

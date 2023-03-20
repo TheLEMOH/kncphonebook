@@ -1,13 +1,13 @@
 <template>
-  <Table :data="data" :add="'divisionCreate'" :edit="'divisionEdit'" @change-page="SearchGet">
+  <Table :data="data" :add="'individualCreate'" :edit="'individualEdit'" @change-page="SearchGet" :structure="true">
     <template #search-menu-header>Структура</template>
     <template #search-menu-body>
       <el-tree :data="structure" default-expand-all :props="treeProps" :expand-on-click-node="false" highlight-current @node-click="NodeClick"> </el-tree>
     </template>
     <template #columns>
-      <el-table-column prop="name" label="Наименование">
+      <el-table-column prop="name" label="ФИО">
         <template #header>
-          <el-input v-model="filter.name" size="small" placeholder="Наименование" @input="SearchChange" clearable />
+          <el-input v-model="filter.name" size="small" placeholder="ФИО" @input="SearchChange" clearable />
         </template>
       </el-table-column>
       <el-table-column prop="organization.shortName" label="Организация">
@@ -26,12 +26,11 @@ import { Get } from "../../scripts/fetch";
 import debounce from "../../scripts/debounce";
 
 const structure = ref(await Get("/organizations"));
+const data = ref(await Get("/individuals/pages"));
 
 const treeProps = {
   label: "name",
 };
-
-const data = ref(await Get("/divisions/pages"));
 
 const filter = ref({});
 
@@ -43,7 +42,7 @@ const NodeClick = (node) => {
 const SearchGet = async (page = 1) => {
   filter.value.page = page;
   const searchParams = new URLSearchParams(filter.value).toString();
-  const res = await Get(`/divisions/pages?${searchParams}`);
+  const res = await Get(`/individuals/pages?${searchParams}`);
   data.value = res;
 };
 

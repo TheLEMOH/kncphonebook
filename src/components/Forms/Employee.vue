@@ -1,6 +1,11 @@
 <template>
   <Form :form="form" :url="url" :rules="rules" :redirect="'employeeAll'">
     <template #fields>
+      <el-form-item label="Физическое лицо" prop="individual">
+        <el-select v-model="form.individualId" filterable placeholder="Выберите физическое лицо" @change="SelectIndividual">
+          <el-option v-for="individual in individuals" :key="individual.id" :label="individual.name" :value="individual.id" />
+        </el-select>
+      </el-form-item>
       <el-form-item label="ФИО" prop="name">
         <el-input v-model="form.name" />
       </el-form-item>
@@ -57,7 +62,6 @@ import { Get } from "../../scripts/fetch";
 const rules = reactive({
   name: [{ required: true, message: "Введите ФИО", trigger: "blur" }],
   organizationId: [{ required: true, message: "Выберите организацию", trigger: "change" }],
-  subdivisionId: [{ required: true, message: "Выберите подразделение", trigger: "change" }],
 });
 
 const url = "/employees";
@@ -67,6 +71,7 @@ const route = useRoute();
 const organizations = await Get(`/organizations`);
 const degrees = await Get(`/degrees`);
 const positions = await Get(`/positions`);
+const individuals = await Get(`/individuals`);
 const divisions = ref([]);
 const structure = ref([]);
 const id = route.params.id;
@@ -98,6 +103,11 @@ const SelectOrg = async (id) => {
 
   form.subdivisionId = null;
   form.address = org.address;
+};
+
+const SelectIndividual = async (id) => {
+  const individual = individuals.find((d) => d.id == id);
+  form.name = individual.name;
 };
 
 const SelectPosition = async (id) => {
