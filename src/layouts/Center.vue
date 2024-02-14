@@ -18,7 +18,7 @@
 <script setup>
 import Header from '../components/Header/Header.vue';
 
-
+console.log()
 </script>
 
 <style>
