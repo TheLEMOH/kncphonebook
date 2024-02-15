@@ -3,7 +3,9 @@
     <el-form ref="formRef" label-width="220px" :label-position="typeForm" :rules="rules" :model="form">
       <slot name="fields"></slot>
     </el-form>
-    <div><slot name="content"></slot></div>
+    <div>
+      <slot name="content"></slot>
+    </div>
     <el-form-item>
       <div class="form-buttons">
         <slot name="buttons">
@@ -12,7 +14,12 @@
           </template>
 
           <template v-if="type == 'edit'">
-            <el-button type="danger" :disabled="loading" @click="Remove">Удалить</el-button>
+            <el-popconfirm confirm-button-text="Да" cancel-button-text="Нет" title="Удалить данный объект?"
+              @confirm="Remove">
+              <template #reference>
+                <el-button type="danger" :disabled="loading">Удалить</el-button>
+              </template>
+            </el-popconfirm>
             <el-button type="primary" :disabled="loading" @click="Update(formRef)">Сохранить</el-button>
           </template>
         </slot>
