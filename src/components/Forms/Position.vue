@@ -4,9 +4,14 @@
       <el-form-item label="Наименование" prop="name">
         <el-input v-model="form.name" />
       </el-form-item>
-      <el-form-item label="Уровень сортировки" prop="levelSort">
-        <el-input-number v-model="form.levelSort" />
-      </el-form-item>
+      <el-space fill>
+        <el-alert type="info" show-icon :closable="false">
+          <p>Уровень сортировки заполняется автоматические. Значение по-умолчанию: 0</p>
+        </el-alert>
+        <el-form-item label="Уровень сортировки" prop="levelSort">
+          <el-input-number v-model="form.levelSort" />
+        </el-form-item>
+      </el-space>
     </template>
   </Form>
 </template>
@@ -23,6 +28,7 @@ const id = route.params.id;
 
 const rules = reactive({
   name: [{ required: true, message: "Введите наименование", trigger: "blur" }],
+  levelSort: [{ type: 'number', message: "Уровень сортировки должнен быть числом" }, { required: true, message: 'Введите уровень сортировки' },]
 });
 
 const url = "/positions";

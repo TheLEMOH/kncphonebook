@@ -24,7 +24,8 @@ const Get = async (url, options = {}) => {
             type: "error",
             duration: 2000
         })
-        return false
+
+        throw new Error(error.message);
     }
 
     {

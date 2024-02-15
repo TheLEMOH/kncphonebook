@@ -2,7 +2,7 @@
     <Form :form=form :url=url :rules="rules" :redirect="'userAll'">
         <template #fields>
             <el-form-item label="Имя пользователя" prop="name">
-                <el-input v-model="form.name" />
+                <el-input name="form-name" v-model="form.name" />
             </el-form-item>
             <el-button type="warning" @click="dialogVisible = true"> Сменить пароль</el-button>
         </template>
@@ -11,7 +11,7 @@
     <el-dialog v-model="dialogVisible" title="Смена пароля" width="400px">
         <el-form ref="formRef" label-width="150px" label-position="left" :rules="rulesPass" :model="newPassword">
             <el-form-item label="Новый пароль" prop="password">
-                <el-input v-model="newPassword.password" type="password" show-password />
+                <el-input name="form-password" v-model="newPassword.password" type="password" show-password />
             </el-form-item>
         </el-form>
         <template #footer>

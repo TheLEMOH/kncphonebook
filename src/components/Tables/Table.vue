@@ -7,7 +7,8 @@
       <span>На странице:</span> <b>{{ props.data.rows.length }}</b>
     </div>
     <div class="flex-grow"></div>
-    <el-checkbox v-model="sortByLevel" label="Сортировка по уровню" @change="ChangeSort" v-if="namePage == 'employeeAll'" />
+    <el-checkbox v-model="sortByLevel" label="Сортировка по уровню" @change="ChangeSort"
+      v-if="namePage == 'employeeAll'" />
   </div>
 
   <div class="data-table">
@@ -23,35 +24,33 @@
       </el-scrollbar>
     </div>
 
-    <el-table :data="props.data.rows" :size="size" stripe class="phonebook-table" default-expand-all>
+    <el-table :class="[client ? 'tableAdmin' : '']" :data="props.data.rows" :size="size" stripe class="phonebook-table"
+      @row-dblclick="Dbclick" default-expand-all>
       <slot name="columns"></slot>
       <el-table-column align="right" v-if="client" width="72px" striped>
         <template #header>
-          <el-button type="primary" :size="size" @click="Create" circle>
-            <el-icon>
-              <Plus :size="size" />
-            </el-icon>
-          </el-button>
+          <el-tooltip class="box-item" effect="light" content="Создать" placement="left">
+            <el-button type="primary" :size="size" @click="Create" circle>
+              <el-icon>
+                <Plus :size="size" />
+              </el-icon>
+            </el-button>
+          </el-tooltip>
         </template>
         <template #default="scope">
-          <el-button type="primary" :size="size" @click="OpenEdit(scope)" circle>
-            <el-icon :size="size">
-              <Edit />
-            </el-icon>
-          </el-button>
+          <el-tooltip class="box-item" effect="light" content="Редактировать" placement="left">
+            <el-button type="primary" :size="size" @click="OpenEdit(scope.row.id)" circle>
+              <el-icon :size="size">
+                <Edit />
+              </el-icon>
+            </el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
   </div>
-  <el-pagination
-    class="pagination"
-    layout="prev, pager, next"
-    :total="data.count"
-    :page-size="20"
-    v-model:current-page="currentPage"
-    @current-change="ChangePage"
-    :default-current-page="1"
-  />
+  <el-pagination class="pagination" layout="prev, pager, next" :total="data.count" :page-size="20"
+    v-model:current-page="currentPage" @current-change="ChangePage" :default-current-page="1" />
 </template>
 
 <script setup>
@@ -92,10 +91,14 @@ const Create = () => {
   router.push({ name: props.add });
 };
 
-const OpenEdit = (scope) => {
-  const id = scope.row.id;
+const OpenEdit = (id) => {
   router.push({ name: props.edit, params: { id } });
 };
+
+const Dbclick = (event) => {
+  if (client.value)
+    OpenEdit(event.id)
+}
 
 const ChangePage = () => {
   if (currentPage) emits("change-page", currentPage);
@@ -144,6 +147,7 @@ const size = computed(() => {
   background: #fff;
   border-bottom: 1px solid #ebeef5;
   padding: 0.5rem;
+  min-height: 40px;
   font-size: var(--el-font-size-base);
   display: flex;
   align-items: center;
@@ -159,6 +163,7 @@ const size = computed(() => {
   background: var(--el-fill-color-lighter);
   border-right: 1px solid #ebeef5;
   flex-shrink: 1;
+  overflow-y: auto;
   width: 250px;
 }
 
@@ -188,5 +193,9 @@ const size = computed(() => {
 .phonebook-table input::placeholder {
   font-weight: bold;
   color: #909399;
+}
+
+.tableAdmin .el-table__row:hover {
+  cursor: pointer;
 }
 </style>
