@@ -51,7 +51,7 @@
       </el-form-item>
       <el-space fill>
         <el-alert type="info" show-icon :closable="false">
-          <p>Уровень сортировки заполняется автоматические. Значение по-умолчанию: 0</p>
+          <p>Уровень сортировки заполняется автоматические и зависит от выбранной должности. Значение по-умолчанию: 0</p>
         </el-alert>
         <el-form-item label="Уровень сортировки" prop="levelSort">
           <el-input-number v-model="form.levelSort" />

@@ -1,21 +1,20 @@
 <template>
-    <Table :data="data" :add="'organizationCreate'" :edit="'organizationEdit'" @change-page="SearchGet" :structure="false">
+    <Table :data="data" :add="'organizationCreate'" :edit="'organizationEdit'" :url="'/organizations/pages'"
+        :filter="filter" :structure="false" @download-done="Done" @set-filter="SetFilter">
         <template #columns>
             <el-table-column prop="shortName" label="Сокращенное наименование">
                 <template #header>
-                    <el-input v-model="filter.shortName" size="small" placeholder="Сокращенное наименование"
-                        @input="SearchChange" clearable />
+                    <el-input v-model="filter.shortName" size="small" placeholder="Сокращенное наименование" clearable />
                 </template>
             </el-table-column>
             <el-table-column prop="name" label="Полное наименование">
                 <template #header>
-                    <el-input v-model="filter.name" size="small" placeholder="Полное наименование" @input="SearchChange"
-                        clearable />
+                    <el-input v-model="filter.name" size="small" placeholder="Полное наименование" clearable />
                 </template>
             </el-table-column>
             <el-table-column prop="address" label="Адрес">
                 <template #header>
-                    <el-input v-model="filter.address" size="small" placeholder="Адрес" @input="SearchChange" clearable />
+                    <el-input v-model="filter.address" size="small" placeholder="Адрес" clearable />
                 </template>
             </el-table-column>
         </template>
@@ -24,22 +23,20 @@
 
 <script setup>
 import Table from './Table.vue';
-import debounce from '../../scripts/debounce';
 import { ref, reactive } from 'vue'
-import { Get } from '../../scripts/fetch';
 
-const data = ref(await Get('/organizations/pages'))
+const data = ref({ count: 0, rows: [] })
 
-const filter = reactive({})
+const filter = ref({})
 
-const SearchGet = async (page = 1) => {
-    filter.page = page
-    const searchParams = new URLSearchParams(filter).toString()
-    const res = await Get(`/organizations/pages?${searchParams}`)
-    data.value = res
+const Done = (e) => {
+    data.value = e
 }
 
-const SearchChange = debounce(() => SearchGet());
+const SetFilter = (e) => {
+    if (e.page)
+        filter.value = e
+}
 
 </script>
 

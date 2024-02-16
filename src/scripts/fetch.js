@@ -55,7 +55,7 @@ const Post = async (url, object) => {
             type: "error",
             duration: 2000
         })
-        return false
+        throw new Error(error.message);
     }
 
     else {
@@ -94,7 +94,7 @@ const Put = async (url, object) => {
             type: "error",
             duration: 2000
         })
-        return false
+        throw new Error(error.message);
     }
 
     else {
@@ -128,7 +128,7 @@ const Delete = async (url, object) => {
             type: "error",
             duration: 2000
         })
-        return false
+        throw new Error(error.message);
     }
 
     else {

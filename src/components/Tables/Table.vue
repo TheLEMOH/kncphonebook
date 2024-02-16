@@ -1,9 +1,9 @@
 <template>
   <div class="info-table" v-if="header">
-    <div class="info-field">
+    <div class="info-field" v-if="props.data.count">
       <span>Всего объектов:</span> <b>{{ props.data.count }}</b>
     </div>
-    <div class="info-field">
+    <div class="info-field" v-if="props.data.rows">
       <span>На странице:</span> <b>{{ props.data.rows.length }}</b>
     </div>
     <div class="flex-grow"></div>
@@ -24,8 +24,8 @@
       </el-scrollbar>
     </div>
 
-    <el-table :class="[client ? 'tableAdmin' : '']" :data="props.data.rows" :size="size" stripe class="phonebook-table"
-      @row-dblclick="Dbclick" default-expand-all>
+    <el-table v-loading="loading" :class="[client ? 'tableAdmin' : '']" :data="props.data.rows" :size="size" stripe
+      class="phonebook-table" @row-dblclick="Dbclick" default-expand-all>
       <slot name="columns"></slot>
       <el-table-column align="right" v-if="client" width="72px" striped>
         <template #header>
@@ -55,7 +55,9 @@
 
 <script setup>
 import { useRouter, useRoute } from "vue-router";
-import { computed, ref, onMounted, onUnmounted } from "vue";
+import { Get } from "../../scripts/fetch";
+import { computed, ref, onMounted, onUnmounted, watch } from "vue";
+import debounce from "../../scripts/debounce";
 import { useStore } from "vuex";
 import { Edit, Plus } from "@element-plus/icons-vue";
 
@@ -63,6 +65,7 @@ const props = defineProps({
   data: Object,
   add: String,
   edit: String,
+  url: String,
   header: {
     type: Boolean,
     default: true,
@@ -71,13 +74,19 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  filter: {
+    type: Object,
+    default: { page: 1 }
+  }
 });
 
-const emits = defineEmits(["change-page", "change-sort"]);
+const emits = defineEmits(["change-page", "change-sort", "download-done", "set-filter"]);
 
 const store = useStore();
 const router = useRouter();
 const route = useRoute();
+
+const loading = ref(true)
 
 const namePage = computed(() => route.name);
 
@@ -101,7 +110,7 @@ const Dbclick = (event) => {
 }
 
 const ChangePage = () => {
-  if (currentPage) emits("change-page", currentPage);
+  SearchGet()
 };
 
 const ChangeSort = (value) => {
@@ -119,6 +128,60 @@ const size = computed(() => {
   if (windowWidth.value <= 1024) return "small";
   if (windowWidth.value > 1024) return "default";
 });
+
+const SetSearchParams = (filter = {}) => {
+
+  const urlFilter = JSON.parse(JSON.stringify(filter))
+
+  for (let key in urlFilter) {
+    if (!urlFilter[key]) {
+      delete urlFilter[key]
+    }
+  }
+
+  router.replace({ query: urlFilter })
+}
+
+const SearchGet = async (value) => {
+
+  loading.value = true
+
+  const getFilter = { ...value, page: currentPage.value }
+
+  const searchParams = new URLSearchParams(getFilter).toString();
+
+  Get(`${props.url}?${searchParams}`).then((res) => {
+    SetSearchParams(getFilter)
+    emits('download-done', res)
+
+    loading.value = false
+  });
+
+}
+
+const GetSearchParamsFromUrl = () => {
+  const params = JSON.parse(JSON.stringify(route.query))
+
+  if (params.page)
+    params.page = +params.page
+  else
+    params.page = 1
+
+  currentPage.value = params.page
+
+  emits('set-filter', params)
+}
+
+const SearchChange = debounce((value) => SearchGet(value));
+
+GetSearchParamsFromUrl()
+
+watch(() => props.filter, (value) => {
+
+  SearchChange(value)
+
+}, { deep: true, immediate: true })
+
 </script>
 
 <style>

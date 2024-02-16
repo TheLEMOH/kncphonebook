@@ -1,24 +1,26 @@
 <template>
-  <Table :data="data" :add="'employeeCreate'" :edit="'employeeEdit'" @change-page="SearchGet" @change-sort="SearchByLevel">
+  <Table :data="data" :url="'/employees/pages'" :add="'employeeCreate'" :edit="'employeeEdit'" :filter="filter"
+    @download-done="Done" @set-filter="SetFilter">
     <template #search-menu-header>Структура</template>
     <template #search-menu-body>
-      <el-tree :data="structure" default-expand-all :props="treeProps" :expand-on-click-node="false" highlight-current @node-click="NodeClick"> </el-tree>
+      <el-tree :data="structure" default-expand-all :props="treeProps" :expand-on-click-node="false" highlight-current
+        @node-click="NodeClick"> </el-tree>
     </template>
     <template #columns>
       <el-table-column prop="room" label="Кабинет" width="80px">
         <template #header>
-          <el-input v-model="filter.room" size="small" placeholder="Каб." @input="SearchChange" clearable />
+          <el-input v-model="filter.room" size="small" placeholder="Каб." clearable />
         </template>
       </el-table-column>
       <el-table-column label="ФИО" min-width="150">
         <template #header>
-          <el-input v-model="filter.name" size="small" placeholder="ФИО" @input="SearchChange" clearable />
+          <el-input v-model="filter.name" size="small" placeholder="ФИО" clearable />
         </template>
         <template #default="scope"> {{ scope.row.surname }} {{ scope.row.name }} {{ scope.row.patronymic }} </template>
       </el-table-column>
       <el-table-column prop="position.name" label="Должность" min-width="100px">
         <template #header>
-          <el-input v-model="filter.position" size="small" placeholder="Должность" @input="SearchChange" clearable />
+          <el-input v-model="filter.position" size="small" placeholder="Должность" clearable />
         </template>
         <template #default="scope">
           {{ scope.row.position.name }}
@@ -29,27 +31,27 @@
       </el-table-column>
       <el-table-column prop="organization.shortName" label="Организация" width="125px">
         <template #header>
-          <el-input v-model="filter.organization" size="small" placeholder="Организация" @input="SearchChange" clearable />
+          <el-input v-model="filter.organization" size="small" placeholder="Организация" clearable />
         </template>
       </el-table-column>
       <el-table-column prop="division.name" label="Структ. подразделение">
         <template #header>
-          <el-input v-model="filter.division" size="small" placeholder="Структ. подразделение" @input="SearchChange" clearable />
+          <el-input v-model="filter.division" size="small" placeholder="Структ. подразделение" clearable />
         </template>
       </el-table-column>
       <el-table-column prop="subdivision.name" label="Подразделение">
         <template #header>
-          <el-input v-model="filter.subdivision" size="small" placeholder="Подразделение" @input="SearchChange" clearable />
+          <el-input v-model="filter.subdivision" size="small" placeholder="Подразделение" clearable />
         </template>
       </el-table-column>
       <el-table-column prop="phone" label="Рабочий тел." width="115px">
         <template #header>
-          <el-input v-model="filter.phone" size="small" placeholder="Рабочий тел." @input="SearchChange" clearable />
+          <el-input v-model="filter.phone" size="small" placeholder="Рабочий тел." clearable />
         </template>
       </el-table-column>
       <el-table-column prop="email" label="Почта" min-width="150">
         <template #header>
-          <el-input v-model="filter.email" size="small" placeholder="Почта" @input="SearchChange" clearable />
+          <el-input v-model="filter.email" size="small" placeholder="Почта" clearable />
         </template>
       </el-table-column>
     </template>
@@ -60,13 +62,12 @@
 import Table from "./Table.vue";
 import { Get } from "../../scripts/fetch";
 import { ref, computed, reactive } from "vue";
-import debounce from "../../scripts/debounce";
-import CreateStructere from "../../scripts/structure";
+import CreateStructure from "../../scripts/structure";
 
 let filter = ref({});
 
-const data = ref(await Get(`/employees/pages`));
-const structure = ref(CreateStructere(await Get("/structure?level=2")));
+const data = ref({ count: 0, rows: [] });
+const structure = ref(CreateStructure(await Get("/structure?level=2")));
 
 const treeProps = {
   label: "name",
@@ -81,27 +82,19 @@ const SetFilterValue = (tree) => {
 };
 
 const NodeClick = (event, tree) => {
-  filter.value = {};
+  filter.value = { page: filter.value.page };
   SetFilterValue(tree);
-  SearchGet();
 };
 
-const SearchGet = async (page = 1) => {
-  filter.value.page = page;
-  const searchParams = new URLSearchParams(filter.value).toString();
-  const res = await Get(`/employees/pages?${searchParams}`);
-  data.value = res;
-};
+const Done = (e) => {
+  data.value = e
+}
 
-const SearchByLevel = async (byLevel = false) => {
-  filter.value.page = 1;
-  filter.value.byLevel = byLevel;
-  const searchParams = new URLSearchParams(filter.value).toString();
-  const res = await Get(`/employees/pages?${searchParams}`);
-  data.value = res;
-};
+const SetFilter = (e) => {
+  if (e.page)
+    filter.value = e
+}
 
-const SearchChange = debounce(() => SearchGet());
 </script>
 
 <style>

@@ -1,7 +1,11 @@
 <template>
-    <Table :data="data" :add="'userCreate'" :edit="'userEdit'" @change-page="SearchGet" :structure="false">
+    <Table :data="data" :add="'userCreate'" :edit="'userEdit'" :url="'/users/pages'" :filter="filter" :structure="false"
+        @download-done="Done" @set-filter="SetFilter">
         <template #columns>
             <el-table-column prop="name" label="Имя пользователя">
+                <template #header>
+                    <el-input v-model="filter.name" size="small" placeholder="Наименование" clearable />
+                </template>
             </el-table-column>
         </template>
     </Table>
@@ -9,21 +13,20 @@
 
 <script setup>
 import Table from './Table.vue';
-import { reactive, ref } from "vue"
-import { Get } from '../../scripts/fetch';
+import { ref } from "vue"
 
-const data = ref(await Get('/users/pages'))
+const data = ref({ count: 0, rows: [] })
 
-const filter = reactive({})
+const filter = ref({})
 
-const SearchGet = async (page = 1) => {
-    filter.page = page
-    const searchParams = new URLSearchParams(filter).toString()
-    const res = await Get(`/users/pages?${searchParams}`)
-    data.value = res
+const Done = (e) => {
+    data.value = e
 }
 
-
+const SetFilter = (e) => {
+    if (e.page)
+        filter.value = e
+}
 </script>
 
 <style></style>

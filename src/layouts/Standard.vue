@@ -2,16 +2,18 @@
     <div class="standard">
         <Header></Header>
         <router-view v-slot="{ Component }">
+
             <Suspense>
                 <template #default>
-                    <component :is="Component" />
+                        <component :is="Component" />
                 </template>
                 <template #fallback>
                     ...Загрузка
                 </template>
             </Suspense>
+
         </router-view>
-</div>
+    </div>
 </template>
 
 <script setup>
