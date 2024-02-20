@@ -30,14 +30,16 @@
       <el-table-column align="right" v-if="client" width="96px" striped>
         <template #header>
           <el-space>
-            <el-tooltip class="box-item" effect="dark" content="Очистить фильтры" placement="left">
+            <el-tooltip class="box-item" effect="dark" content="Очистить фильтры" placement="left" :enterable="false"
+              :hide-after="50">
               <el-button type="primary" :size="size" @click="CrearFilter" circle>
                 <el-icon>
                   <CircleCloseFilled :size="size" />
                 </el-icon>
               </el-button>
             </el-tooltip>
-            <el-tooltip class="box-item" effect="dark" content="Создать" placement="bottom">
+            <el-tooltip class="box-item" effect="dark" content="Создать" placement="left" :enterable="false"
+              :hide-after="50">
               <el-button type="primary" :size="size" @click="Create" circle>
                 <el-icon>
                   <Plus :size="size" />
@@ -47,7 +49,8 @@
           </el-space>
         </template>
         <template #default="scope">
-          <el-tooltip class="box-item" effect="dark" content="Редактировать" placement="left">
+          <el-tooltip class="box-item" effect="dark" content="Редактировать" placement="left" :enterable="false"
+            :hide-after="50">
             <el-button type="primary" :size="size" @click="OpenEdit(scope.row.id)" circle>
               <el-icon :size="size">
                 <Edit />
