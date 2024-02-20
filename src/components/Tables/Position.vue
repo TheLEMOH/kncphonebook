@@ -1,6 +1,6 @@
 <template>
   <Table :data="data" :add="'positionCreate'" :edit="'positionEdit'" :filter="filter" :url="'/positions/pages'"
-    @download-done="Done" @set-filter="SetFilter" :structure="false">
+    @download-done="Done" @set-filter="SetFilter" :structure="false" @clear-filter="ClearFilter">
     <template #columns>
       <el-table-column prop="name" label="Наименование">
         <template #header>
@@ -37,6 +37,9 @@ const SetFilter = (e) => {
     filter.value = e
 }
 
+const ClearFilter = () => {
+  filter.value = {}
+}
 </script>
 
 <style></style>

@@ -2,18 +2,18 @@
     <Form :form=form :url=url :rules="rules" :redirect="'subdivisionAll'">
         <template #fields>
             <el-form-item label="Наименование" prop="name">
-                <el-input v-model="form.name" />
+                <el-input v-model="form.name" maxlength="100" show-word-limit />
             </el-form-item>
             <el-form-item label="Вышестоящее подразделение" prop="divisionId">
                 <el-select v-model="form.divisionId" filterable placeholder="Выберите подразделение"
                     @change="SelectDivision">
-                    <el-option-group v-for="group in structure" :key="group.id" :label="group.name">
+                    <el-option-group v-for="group in structure" :key="group.id" :label="group.shortName">
                         <el-option v-for="item in group.divisions" :key="item.id" :label="item.name" :value="item.id" />
                     </el-option-group>
                 </el-select>
             </el-form-item>
         </template>
-</Form>
+    </Form>
 </template>
 
 <script setup>

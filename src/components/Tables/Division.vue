@@ -1,10 +1,10 @@
 <template>
   <Table :data="data" :add="'divisionCreate'" :edit="'divisionEdit'" :filter="filter" :url="'/divisions/pages'"
-    @download-done="Done" @set-filter="SetFilter">
+    @download-done="Done" @set-filter="SetFilter" @clear-filter="ClearFilter">
     <template #search-menu-header>Структура</template>
     <template #search-menu-body>
       <el-tree :data="structure" default-expand-all :props="treeProps" :expand-on-click-node="false" highlight-current
-        @node-click="NodeClick"> </el-tree>
+        node-key="id" @node-click="NodeClick"> </el-tree>
     </template>
     <template #columns>
       <el-table-column prop="name" label="Наименование">
@@ -29,7 +29,7 @@ import { Get } from "../../scripts/fetch";
 const structure = ref(await Get("/organizations"));
 
 const treeProps = {
-  label: "name",
+  label: 'shortName'
 };
 
 const data = ref({ count: 0, rows: [] });
@@ -37,7 +37,7 @@ const data = ref({ count: 0, rows: [] });
 const filter = ref({});
 
 const NodeClick = (node) => {
-  filter.value[node.type] = node.name;
+  filter.value[node.type] = node.shortName;
 };
 
 const Done = (e) => {
@@ -47,6 +47,10 @@ const Done = (e) => {
 const SetFilter = (e) => {
   if (e.page)
     filter.value = e
+}
+
+const ClearFilter = () => {
+  filter.value = {}
 }
 
 </script>

@@ -9,11 +9,11 @@
         </el-select>
       </el-form-item>
       <el-form-item label="ФИО" prop="name">
-        <el-input v-model="form.name" />
+        <el-input v-model="form.name" maxlength="100" show-word-limit/>
       </el-form-item>
       <el-form-item label="Организация" prop="organizationId">
         <el-select v-model="form.organizationId" filterable placeholder="Выберите организацию" @change="SelectOrg">
-          <el-option v-for="org in organizations" :key="org.id" :label="org.name" :value="org.id" />
+          <el-option v-for="org in organizations" :key="org.id" :label="org.shortName" :value="org.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="Подразделение" prop="subdivisionId">
@@ -35,19 +35,19 @@
         </el-select>
       </el-form-item>
       <el-form-item label="Рабочий телефон">
-        <el-input v-model="form.phone" />
+        <el-input v-model="form.phone" maxlength="100" show-word-limit/>
       </el-form-item>
       <el-form-item label="Почта" prop="email">
-        <el-input v-model="form.email" />
+        <el-input v-model="form.email" maxlength="100" show-word-limit/>
       </el-form-item>
       <el-form-item label="Адрес" prop="address">
-        <el-input v-model="form.address" />
+        <el-input v-model="form.address" maxlength="100" show-word-limit/>
       </el-form-item>
       <el-form-item label="Этаж" prop="floor">
-        <el-input v-model="form.floor" />
+        <el-input v-model="form.floor" maxlength="100" show-word-limit/>
       </el-form-item>
       <el-form-item label="Кабинет" prop="room">
-        <el-input v-model="form.room" />
+        <el-input v-model="form.room" maxlength="100" show-word-limit/>
       </el-form-item>
       <el-space fill>
         <el-alert type="info" show-icon :closable="false">
@@ -93,7 +93,7 @@ if (id) {
   const object = await Get(`/${url}/${id}`).catch(() => { router.back() })
 
   form = reactive(object);
-  
+
   const orgId = form.organizationId;
   structure.value = await Get(`/structure?level=2&id=${orgId}`);
   divisions.value = structure.value[0].divisions;

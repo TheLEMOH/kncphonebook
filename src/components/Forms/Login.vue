@@ -2,10 +2,10 @@
     <Form :form=form :url=url :rules="rules">
         <template #fields>
             <el-form-item label="Имя пользователя" prop="name">
-                <el-input v-model="form.name" />
+                <el-input v-model="form.name" maxlength="100" show-word-limit/>
             </el-form-item>
             <el-form-item label="Пароль" prop="password">
-                <el-input v-model="form.password" type="password" show-password />
+                <el-input v-model="form.password" type="password" show-password maxlength="100" show-word-limit/>
             </el-form-item>
         </template>
 

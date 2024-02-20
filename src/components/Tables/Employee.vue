@@ -1,6 +1,6 @@
 <template>
   <Table :data="data" :url="'/employees/pages'" :add="'employeeCreate'" :edit="'employeeEdit'" :filter="filter"
-    @download-done="Done" @set-filter="SetFilter">
+    @download-done="Done" @set-filter="SetFilter" @clear-filter="ClearFilter">
     <template #search-menu-header>Структура</template>
     <template #search-menu-body>
       <el-tree :data="structure" default-expand-all :props="treeProps" :expand-on-click-node="false" highlight-current
@@ -70,7 +70,9 @@ const data = ref({ count: 0, rows: [] });
 const structure = ref(CreateStructure(await Get("/structure?level=2")));
 
 const treeProps = {
-  label: "name",
+  label: (data) => {
+    return data.shortName || data.name
+  },
 };
 
 const SetFilterValue = (tree) => {
@@ -78,7 +80,7 @@ const SetFilterValue = (tree) => {
     SetFilterValue(tree.parent);
   }
   const data = tree.data;
-  filter.value[data.type] = data.name;
+  filter.value[data.type] = data.shortName || data.name;
 };
 
 const NodeClick = (event, tree) => {
@@ -93,6 +95,10 @@ const Done = (e) => {
 const SetFilter = (e) => {
   if (e.page)
     filter.value = e
+}
+
+const ClearFilter = () => {
+  filter.value = {}
 }
 
 </script>

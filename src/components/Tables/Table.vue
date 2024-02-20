@@ -27,18 +27,27 @@
     <el-table v-loading="loading" :class="[client ? 'tableAdmin' : '']" :data="props.data.rows" :size="size" stripe
       class="phonebook-table" @row-dblclick="Dbclick" default-expand-all>
       <slot name="columns"></slot>
-      <el-table-column align="right" v-if="client" width="72px" striped>
+      <el-table-column align="right" v-if="client" width="96px" striped>
         <template #header>
-          <el-tooltip class="box-item" effect="light" content="Создать" placement="left">
-            <el-button type="primary" :size="size" @click="Create" circle>
-              <el-icon>
-                <Plus :size="size" />
-              </el-icon>
-            </el-button>
-          </el-tooltip>
+          <el-space>
+            <el-tooltip class="box-item" effect="dark" content="Очистить фильтры" placement="left">
+              <el-button type="primary" :size="size" @click="CrearFilter" circle>
+                <el-icon>
+                  <CircleCloseFilled :size="size" />
+                </el-icon>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip class="box-item" effect="dark" content="Создать" placement="bottom">
+              <el-button type="primary" :size="size" @click="Create" circle>
+                <el-icon>
+                  <Plus :size="size" />
+                </el-icon>
+              </el-button>
+            </el-tooltip>
+          </el-space>
         </template>
         <template #default="scope">
-          <el-tooltip class="box-item" effect="light" content="Редактировать" placement="left">
+          <el-tooltip class="box-item" effect="dark" content="Редактировать" placement="left">
             <el-button type="primary" :size="size" @click="OpenEdit(scope.row.id)" circle>
               <el-icon :size="size">
                 <Edit />
@@ -59,7 +68,7 @@ import { Get } from "../../scripts/fetch";
 import { computed, ref, onMounted, onUnmounted, watch } from "vue";
 import debounce from "../../scripts/debounce";
 import { useStore } from "vuex";
-import { Edit, Plus } from "@element-plus/icons-vue";
+import { Edit, Plus, CircleCloseFilled } from "@element-plus/icons-vue";
 
 const props = defineProps({
   data: Object,
@@ -80,7 +89,7 @@ const props = defineProps({
   }
 });
 
-const emits = defineEmits(["change-page", "change-sort", "download-done", "set-filter"]);
+const emits = defineEmits(["change-page", "change-sort", "download-done", "set-filter", "clear-filter"]);
 
 const store = useStore();
 const router = useRouter();
@@ -172,6 +181,10 @@ const GetSearchParamsFromUrl = () => {
   emits('set-filter', params)
 }
 
+const CrearFilter = () => {
+  emits('clear-filter')
+}
+
 const SearchChange = debounce((value) => SearchGet(value));
 
 GetSearchParamsFromUrl()
@@ -196,6 +209,10 @@ watch(() => props.filter, (value) => {
 
 .pagination {
   justify-content: center;
+}
+
+.el-table .cell {
+  text-overflow: clip;
 }
 
 .phonebook-tools {

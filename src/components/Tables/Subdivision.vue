@@ -1,6 +1,6 @@
 <template>
     <Table :data="data" :add="'subdivisionCreate'" :edit="'subdivisionEdit'" :filter="filter" :url="'/subdivisions/pages'"
-        @download-done="Done" @set-filter="SetFilter">
+        @download-done="Done" @set-filter="SetFilter" @clear-filter="ClearFilter">
         <template #search-menu-header>Структура</template>
         <template #search-menu-body>
             <el-tree :data="structure" default-expand-all :props="treeProps" :expand-on-click-node="false" highlight-current
@@ -38,7 +38,12 @@ const filter = ref({})
 const structure = ref(CreateStructere(await Get('/structure?level=1')))
 
 const treeProps = {
-    label: 'name',
+    label: (data) => {
+        if (data.type == 'organization')
+            return data.shortName
+        if (data.type == 'division')
+            return data.name
+    },
 }
 
 const data = ref({ count: 0, rows: [] })
@@ -49,10 +54,10 @@ const NodeClick = (node, treeNode) => {
     if (treeNode.level > 1) {
         const parent = treeNode.parent.data
 
-        filter.value[parent.type] = parent.name
+        filter.value[parent.type] = parent.shortName || parent.name
     }
 
-    filter.value[node.type] = node.name
+    filter.value[node.type] = node.shortName || node.name
 }
 
 const Done = (e) => {
@@ -62,6 +67,10 @@ const Done = (e) => {
 const SetFilter = (e) => {
     if (e.page)
         filter.value = e
+}
+
+const ClearFilter = () => {
+    filter.value = {}
 }
 
 </script>

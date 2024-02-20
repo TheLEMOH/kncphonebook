@@ -2,13 +2,13 @@
     <Form :form=form :url=url :rules="rules" :redirect="'organizationAll'">
         <template #fields>
             <el-form-item label="Сокращенное наименование" prop="shortName">
-                <el-input v-model="form.shortName" />
+                <el-input v-model="form.shortName" maxlength="100" show-word-limit />
             </el-form-item>
             <el-form-item label="Полное наименование" prop="name">
-                <el-input v-model="form.name" />
+                <el-input v-model="form.name" maxlength="255" show-word-limit />
             </el-form-item>
             <el-form-item label="Адрес организации" prop="address">
-                <el-input v-model="form.address" />
+                <el-input v-model="form.address" maxlength="100" show-word-limit />
             </el-form-item>
         </template>
     </Form>

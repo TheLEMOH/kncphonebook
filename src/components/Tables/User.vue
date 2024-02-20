@@ -1,6 +1,6 @@
 <template>
     <Table :data="data" :add="'userCreate'" :edit="'userEdit'" :url="'/users/pages'" :filter="filter" :structure="false"
-        @download-done="Done" @set-filter="SetFilter">
+        @download-done="Done" @set-filter="SetFilter" @clear-filter="ClearFilter">
         <template #columns>
             <el-table-column prop="name" label="Имя пользователя">
                 <template #header>
@@ -26,6 +26,10 @@ const Done = (e) => {
 const SetFilter = (e) => {
     if (e.page)
         filter.value = e
+}
+
+const ClearFilter = () => {
+    filter.value = {}
 }
 </script>
 

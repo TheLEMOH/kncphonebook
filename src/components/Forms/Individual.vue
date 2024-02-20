@@ -2,11 +2,11 @@
   <Form :form="form" :url="url" :rules="rules" :redirect="'individualAll'">
     <template #fields>
       <el-form-item label="ФИО" prop="name">
-        <el-input v-model="form.name" />
+        <el-input v-model="form.name" maxlength="100" show-word-limit/>
       </el-form-item>
       <el-form-item label="Организация" prop="organizationId">
         <el-select v-model="form.organizationId" filterable placeholder="Выберите организацию">
-          <el-option v-for="org in organizations" :key="org.id" :label="org.name" :value="org.id" />
+          <el-option v-for="org in organizations" :key="org.id" :label="org.shortName" :value="org.id" />
         </el-select>
       </el-form-item>
     </template>

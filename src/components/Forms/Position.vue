@@ -2,7 +2,7 @@
   <Form :form="form" :url="url" :rules="rules" :redirect="'positionAll'">
     <template #fields>
       <el-form-item label="Наименование" prop="name">
-        <el-input v-model="form.name" />
+        <el-input v-model="form.name" maxlength="100" show-word-limit />
       </el-form-item>
       <el-space fill>
         <el-alert type="info" show-icon :closable="false">

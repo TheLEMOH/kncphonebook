@@ -1,6 +1,6 @@
 <template>
     <Table :data="data" :add="'organizationCreate'" :edit="'organizationEdit'" :url="'/organizations/pages'"
-        :filter="filter" :structure="false" @download-done="Done" @set-filter="SetFilter">
+        :filter="filter" :structure="false" @download-done="Done" @set-filter="SetFilter" @clear-filter="ClearFilter">
         <template #columns>
             <el-table-column prop="shortName" label="Сокращенное наименование">
                 <template #header>
@@ -38,6 +38,9 @@ const SetFilter = (e) => {
         filter.value = e
 }
 
+const ClearFilter = () => {
+    filter.value = {}
+}
 </script>
 
 <style></style>
