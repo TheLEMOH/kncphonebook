@@ -24,8 +24,8 @@
         </template>
         <template #default="scope">
           {{ scope.row.position.name }}
-          <template v-if="scope.row.degree">
-            <p>{{ scope.row.degree.name }}</p>
+          <template v-if="scope.row.individual.degree">
+            <p>{{ scope.row.individual.degree.name }}</p>
           </template>
         </template>
       </el-table-column>

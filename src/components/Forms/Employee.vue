@@ -9,7 +9,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="ФИО" prop="name">
-        <el-input v-model="form.name" maxlength="100" show-word-limit/>
+        <el-input v-model="form.name" maxlength="100" show-word-limit />
       </el-form-item>
       <el-form-item label="Организация" prop="organizationId">
         <el-select v-model="form.organizationId" filterable placeholder="Выберите организацию" @change="SelectOrg">
@@ -29,25 +29,20 @@
           <el-option v-for="item in positions" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
       </el-form-item>
-      <el-form-item label="Ученая степень">
-        <el-select v-model="form.degreeId" filterable placeholder="Выберите степень">
-          <el-option v-for="degree in degrees" :key="degree.id" :label="degree.name" :value="degree.id" />
-        </el-select>
-      </el-form-item>
       <el-form-item label="Рабочий телефон">
-        <el-input v-model="form.phone" maxlength="100" show-word-limit/>
+        <el-input v-model="form.phone" maxlength="100" show-word-limit />
       </el-form-item>
       <el-form-item label="Почта" prop="email">
-        <el-input v-model="form.email" maxlength="100" show-word-limit/>
+        <el-input v-model="form.email" maxlength="100" show-word-limit />
       </el-form-item>
       <el-form-item label="Адрес" prop="address">
-        <el-input v-model="form.address" maxlength="100" show-word-limit/>
+        <el-input v-model="form.address" maxlength="100" show-word-limit />
       </el-form-item>
       <el-form-item label="Этаж" prop="floor">
-        <el-input v-model="form.floor" maxlength="100" show-word-limit/>
+        <el-input v-model="form.floor" maxlength="100" show-word-limit />
       </el-form-item>
       <el-form-item label="Кабинет" prop="room">
-        <el-input v-model="form.room" maxlength="100" show-word-limit/>
+        <el-input v-model="form.room" maxlength="100" show-word-limit />
       </el-form-item>
       <el-space fill>
         <el-alert type="info" show-icon :closable="false">
@@ -79,7 +74,6 @@ const route = useRoute();
 const router = useRouter()
 
 const organizations = await Get(`/organizations`);
-const degrees = await Get(`/degrees`);
 const positions = await Get(`/positions`);
 const individuals = await Get(`/individuals`);
 const divisions = ref([]);
@@ -120,6 +114,10 @@ const SelectOrg = async (id) => {
 
 const SelectIndividual = async (id) => {
   const individual = individuals.find((d) => d.id == id);
+
+  SelectOrg(individual.organizationId)
+
+  form.organizationId = individual.organizationId
   form.name = individual.name;
 };
 
