@@ -12,25 +12,13 @@
 </template>
 
 <script setup>
+
 import Table from './Table.vue';
-import { ref } from "vue"
+import Filter from "./scripts/filter"
+import Data from "./scripts/data"
 
-const data = ref({ count: 0, rows: [] })
-
-const filter = ref({})
-
-const Done = (e) => {
-    data.value = e
-}
-
-const SetFilter = (e) => {
-    if (e.page)
-        filter.value = e
-}
-
-const ClearFilter = () => {
-    filter.value = {}
-}
+const { filter, SetFilter, ClearFilter } = Filter()
+const { data, Done, } = Data()
 </script>
 
 <style></style>

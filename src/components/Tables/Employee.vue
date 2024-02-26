@@ -1,6 +1,6 @@
 <template>
   <Table :data="data" :url="'/employees/pages'" :add="'employeeCreate'" :edit="'employeeEdit'" :filter="filter"
-    @download-done="Done" @set-filter="SetFilter" @clear-filter="ClearFilter">
+    @download-done="Done" @set-filter="SetFilter" @clear-filter="ClearFilter" @change-sort="SearchByLevel">
     <template #search-menu-header>Структура</template>
     <template #search-menu-body>
       <el-tree :data="structure" default-expand-all :props="treeProps" :expand-on-click-node="false" highlight-current
@@ -61,19 +61,16 @@
 <script setup>
 import Table from "./Table.vue";
 import { Get } from "../../scripts/fetch";
-import { ref, computed, reactive } from "vue";
+import { ref } from "vue";
 import CreateStructure from "../../scripts/structure";
 
-let filter = ref({});
+import Filter from "./scripts/filter"
+import Data from "./scripts/data"
 
-const data = ref({ count: 0, rows: [] });
+const { filter, SetFilter, ClearFilter } = Filter()
+const { data, treeProps, Done, } = Data()
+
 const structure = ref(CreateStructure(await Get("/structure?level=2")));
-
-const treeProps = {
-  label: (data) => {
-    return data.shortName || data.name
-  },
-};
 
 const SetFilterValue = (tree) => {
   if (tree.parent && tree.level > 1) {
@@ -83,23 +80,20 @@ const SetFilterValue = (tree) => {
   filter.value[data.type] = data.shortName || data.name;
 };
 
+const SearchByLevel = async (byLevel = false) => {
+  filter.value.page = 1;
+  filter.value.byLevel = byLevel;
+
+  const searchParams = new URLSearchParams(filter.value).toString();
+  const res = await Get(`/employees/pages?${searchParams}`);
+  
+  data.value = res;
+};
+
 const NodeClick = (event, tree) => {
   filter.value = { page: filter.value.page };
   SetFilterValue(tree);
 };
-
-const Done = (e) => {
-  data.value = e
-}
-
-const SetFilter = (e) => {
-  if (e.page)
-    filter.value = e
-}
-
-const ClearFilter = () => {
-  filter.value = {}
-}
 
 </script>
 

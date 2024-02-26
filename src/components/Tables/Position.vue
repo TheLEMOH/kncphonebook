@@ -18,28 +18,12 @@
 
 <script setup>
 import Table from "./Table.vue";
-import { reactive, ref } from "vue";
 
-const filter = ref({});
+import Filter from "./scripts/filter"
+import Data from "./scripts/data"
 
-const treeProps = {
-  label: "name",
-};
-
-const data = ref({ count: 0, rows: [] });
-
-const Done = (e) => {
-  data.value = e
-}
-
-const SetFilter = (e) => {
-  if (e.page)
-    filter.value = e
-}
-
-const ClearFilter = () => {
-  filter.value = {}
-}
+const { filter, SetFilter, ClearFilter } = Filter()
+const { data, Done, } = Data()
 </script>
 
 <style></style>

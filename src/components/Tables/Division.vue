@@ -23,35 +23,21 @@
 
 <script setup>
 import Table from "./Table.vue";
-import { reactive, ref } from "vue";
+import { ref } from "vue";
 import { Get } from "../../scripts/fetch";
 
+import Filter from "./scripts/filter"
+import Data from "./scripts/data"
+
+const { filter, SetFilter, ClearFilter } = Filter()
+const { data, treeProps, Done, } = Data()
+
 const structure = ref(await Get("/organizations"));
-
-const treeProps = {
-  label: 'shortName'
-};
-
-const data = ref({ count: 0, rows: [] });
-
-const filter = ref({});
 
 const NodeClick = (node) => {
   filter.value[node.type] = node.shortName;
 };
 
-const Done = (e) => {
-  data.value = e
-}
-
-const SetFilter = (e) => {
-  if (e.page)
-    filter.value = e
-}
-
-const ClearFilter = () => {
-  filter.value = {}
-}
 
 </script>
 

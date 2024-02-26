@@ -23,24 +23,13 @@
 
 <script setup>
 import Table from './Table.vue';
-import { ref, reactive } from 'vue'
 
-const data = ref({ count: 0, rows: [] })
+import Filter from "./scripts/filter"
+import Data from "./scripts/data"
 
-const filter = ref({})
+const { filter, SetFilter, ClearFilter } = Filter()
+const { data, Done, } = Data()
 
-const Done = (e) => {
-    data.value = e
-}
-
-const SetFilter = (e) => {
-    if (e.page)
-        filter.value = e
-}
-
-const ClearFilter = () => {
-    filter.value = {}
-}
 </script>
 
 <style></style>

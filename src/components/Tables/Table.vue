@@ -181,6 +181,8 @@ const GetSearchParamsFromUrl = () => {
 
   currentPage.value = params.page
 
+  sortByLevel.value = Boolean(params.byLevel)
+
   emits('set-filter', params)
 }
 

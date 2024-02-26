@@ -33,20 +33,13 @@ import { ref } from 'vue'
 import { Get } from '../../scripts/fetch';
 import CreateStructere from "../../scripts/structure"
 
-const filter = ref({})
+import Filter from "./scripts/filter"
+import Data from "./scripts/data"
+
+const { filter, SetFilter, ClearFilter } = Filter()
+const { data, treeProps, Done, } = Data()
 
 const structure = ref(CreateStructere(await Get('/structure?level=1')))
-
-const treeProps = {
-    label: (data) => {
-        if (data.type == 'organization')
-            return data.shortName
-        if (data.type == 'division')
-            return data.name
-    },
-}
-
-const data = ref({ count: 0, rows: [] })
 
 const NodeClick = (node, treeNode) => {
     filter.value = {}
@@ -58,19 +51,6 @@ const NodeClick = (node, treeNode) => {
     }
 
     filter.value[node.type] = node.shortName || node.name
-}
-
-const Done = (e) => {
-    data.value = e
-}
-
-const SetFilter = (e) => {
-    if (e.page)
-        filter.value = e
-}
-
-const ClearFilter = () => {
-    filter.value = {}
 }
 
 </script>
