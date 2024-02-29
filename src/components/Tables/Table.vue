@@ -1,45 +1,40 @@
 <template>
-  <div class="info-table" v-if="header">
-    <div class="info-field" v-if="props.data.count">
-      <span>Всего объектов:</span> <b>{{ props.data.count }}</b>
-    </div>
-    <div class="info-field" v-if="props.data.rows">
-      <span>На странице:</span> <b>{{ props.data.rows.length }}</b>
-    </div>
-    <div class="flex-grow"></div>
-    <el-checkbox v-model="sortByLevel" label="Сортировка по уровню" @change="ChangeSort"
-      v-if="namePage == 'employeeAll'" />
-  </div>
+  <TableHeader :data="data" :objectsForBulkUpdate="objectsForBulkUpdate"></TableHeader>
 
   <div class="data-table">
-    <div class="search-menu" v-if="structure">
-      <div class="search-menu-header">
+    <TableTree>
+      <template #search-menu-header>
         <slot name="search-menu-header"></slot>
-      </div>
+      </template>
 
-      <el-scrollbar>
-        <div class="search-menu-body">
-          <slot name="search-menu-body"></slot>
-        </div>
-      </el-scrollbar>
-    </div>
+      <template #search-menu-body>
+        <slot name="search-menu-body"></slot>
+      </template>
+    </TableTree>
 
-    <el-table v-loading="loading" :class="[client ? 'tableAdmin' : '']" :data="props.data.rows" :size="size" stripe
-      class="phonebook-table" @row-dblclick="Dbclick" default-expand-all>
+    <el-table
+      v-loading="loading"
+      :class="[client ? 'tableAdmin' : '']"
+      :data="props.data.rows"
+      :size="size"
+      stripe
+      class="phonebook-table"
+      @row-dblclick="Dbclick"
+      @selection-change="handleSelectionChange"
+      default-expand-all
+    >
       <slot name="columns"></slot>
       <el-table-column align="right" v-if="client" width="96px" striped>
         <template #header>
           <el-space>
-            <el-tooltip class="box-item" effect="dark" content="Очистить фильтры" placement="left" :enterable="false"
-              :hide-after="50">
+            <el-tooltip class="box-item" effect="dark" content="Очистить фильтры" placement="left" :enterable="false" :hide-after="50">
               <el-button type="primary" :size="size" @click="CrearFilter" circle>
                 <el-icon>
                   <CircleCloseFilled :size="size" />
                 </el-icon>
               </el-button>
             </el-tooltip>
-            <el-tooltip class="box-item" effect="dark" content="Создать" placement="left" :enterable="false"
-              :hide-after="50">
+            <el-tooltip class="box-item" effect="dark" content="Создать" placement="left" :enterable="false" :hide-after="0">
               <el-button type="primary" :size="size" @click="Create" circle>
                 <el-icon>
                   <Plus :size="size" />
@@ -49,8 +44,7 @@
           </el-space>
         </template>
         <template #default="scope">
-          <el-tooltip class="box-item" effect="dark" content="Редактировать" placement="left" :enterable="false"
-            :hide-after="50">
+          <el-tooltip class="box-item" effect="dark" content="Редактировать" placement="left" :enterable="false" :hide-after="0">
             <el-button type="primary" :size="size" @click="OpenEdit(scope.row.id)" circle>
               <el-icon :size="size">
                 <Edit />
@@ -61,17 +55,22 @@
       </el-table-column>
     </el-table>
   </div>
-  <el-pagination class="pagination" layout="prev, pager, next" :total="data.count" :page-size="20"
-    v-model:current-page="currentPage" @current-change="ChangePage" :default-current-page="1" />
+
+  <TablePagination :currentPage="currentPage" @change-page="ChangePage"></TablePagination>
 </template>
 
 <script setup>
 import { useRouter, useRoute } from "vue-router";
 import { Get } from "../../scripts/fetch";
 import { computed, ref, onMounted, onUnmounted, watch } from "vue";
+import { ElMessage } from "element-plus";
 import debounce from "../../scripts/debounce";
 import { useStore } from "vuex";
 import { Edit, Plus, CircleCloseFilled } from "@element-plus/icons-vue";
+
+import TableHeader from "./TableComponents/TableHeader.vue";
+import TableTree from "./TableComponents/TableTree.vue";
+import TablePagination from "./TableComponents/TablePagination.vue";
 
 const props = defineProps({
   data: Object,
@@ -88,23 +87,23 @@ const props = defineProps({
   },
   filter: {
     type: Object,
-    default: { page: 1 }
-  }
+    default: { page: 1 },
+  },
 });
 
-const emits = defineEmits(["change-page", "change-sort", "download-done", "set-filter", "clear-filter"]);
+const emits = defineEmits(["change-page", "change-sort", "download-done", "set-filter", "clear-filter", "open-dialog", "add-objects"]);
 
 const store = useStore();
 const router = useRouter();
 const route = useRoute();
 
-const loading = ref(true)
-
-const namePage = computed(() => route.name);
+const loading = ref(true);
 
 const currentPage = ref(1);
 
 const sortByLevel = ref(false);
+
+const objectsForBulkUpdate = ref([]);
 
 const client = computed(() => store.getters.client);
 
@@ -117,24 +116,28 @@ const OpenEdit = (id) => {
 };
 
 const Dbclick = (event) => {
-  if (client.value)
-    OpenEdit(event.id)
-}
+  if (client.value) OpenEdit(event.id);
+};
 
 const ChangePage = () => {
-  SearchGet()
+  SearchGet();
 };
 
 const ChangeSort = (value) => {
   emits("change-sort", value);
 };
 
+const handleSelectionChange = (objects) => {
+  objectsForBulkUpdate.value = objects;
+};
+
+const AddObject = () => {
+  emits("add-objects", JSON.parse(JSON.stringify(objectsForBulkUpdate.value)));
+};
+
 const windowWidth = ref(window.innerWidth);
 
 const OnWidthChange = () => (windowWidth.value = window.innerWidth);
-
-onMounted(() => window.addEventListener("resize", OnWidthChange));
-onUnmounted(() => window.removeEventListener("resize", OnWidthChange));
 
 const size = computed(() => {
   if (windowWidth.value <= 1024) return "small";
@@ -142,64 +145,63 @@ const size = computed(() => {
 });
 
 const SetSearchParams = (filter = {}) => {
-
-  const urlFilter = JSON.parse(JSON.stringify(filter))
+  const urlFilter = JSON.parse(JSON.stringify(filter));
 
   for (let key in urlFilter) {
     if (!urlFilter[key]) {
-      delete urlFilter[key]
+      delete urlFilter[key];
     }
   }
 
-  router.replace({ query: urlFilter })
-}
+  router.replace({ query: urlFilter });
+};
 
 const SearchGet = async (value) => {
+  loading.value = true;
 
-  loading.value = true
-
-  const getFilter = { ...value, page: currentPage.value }
+  const getFilter = { ...value, page: currentPage.value };
 
   const searchParams = new URLSearchParams(getFilter).toString();
 
   Get(`${props.url}?${searchParams}`).then((res) => {
-    SetSearchParams(getFilter)
-    emits('download-done', res)
+    SetSearchParams(getFilter);
+    emits("download-done", res);
 
-    loading.value = false
+    loading.value = false;
   });
-
-}
+};
 
 const GetSearchParamsFromUrl = () => {
-  const params = JSON.parse(JSON.stringify(route.query))
+  const params = JSON.parse(JSON.stringify(route.query));
 
-  if (params.page)
-    params.page = +params.page
-  else
-    params.page = 1
+  if (params.page) params.page = +params.page;
+  else params.page = 1;
 
-  currentPage.value = params.page
+  currentPage.value = params.page;
 
-  sortByLevel.value = Boolean(params.byLevel)
+  sortByLevel.value = Boolean(params.byLevel);
 
-  emits('set-filter', params)
-}
+  emits("set-filter", params);
+};
 
 const CrearFilter = () => {
-  emits('clear-filter')
-}
+  emits("clear-filter");
+};
 
 const SearchChange = debounce((value) => SearchGet(value));
 
-GetSearchParamsFromUrl()
+GetSearchParamsFromUrl();
 
-watch(() => props.filter, (value) => {
+onMounted(() => window.addEventListener("resize", OnWidthChange));
+onUnmounted(() => window.removeEventListener("resize", OnWidthChange));
 
-  SearchChange(value)
-
-}, { deep: true, immediate: true })
-
+watch(
+  () => props.filter,
+  (value) => {
+    SearchChange(value);
+  },
+  { deep: true, immediate: true }
+);
 </script>
 
 <style>

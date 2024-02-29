@@ -2,10 +2,8 @@
   <Form :form="form" :url="url" :rules="rules" :redirect="'employeeAll'">
     <template #fields>
       <el-form-item label="Физическое лицо" prop="individual">
-        <el-select v-model="form.individualId" filterable placeholder="Выберите физическое лицо"
-          @change="SelectIndividual">
-          <el-option v-for="individual in individuals" :key="individual.id" :label="individual.name"
-            :value="individual.id" />
+        <el-select v-model="form.individualId" filterable placeholder="Выберите физическое лицо" @change="SelectIndividual">
+          <el-option v-for="individual in individuals" :key="individual.id" :label="individual.name" :value="individual.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="ФИО" prop="name">
@@ -17,8 +15,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="Подразделение" prop="subdivisionId">
-        <el-select v-model="form.subdivisionId" filterable placeholder="Выберите подразделение"
-          @change="SelectSubdivision">
+        <el-select v-model="form.subdivisionId" filterable placeholder="Выберите подразделение" @change="SelectSubdivision">
           <el-option-group v-for="group in divisions" :key="group.id" :label="group.name">
             <el-option v-for="item in group.subdivisions" :key="item.id" :label="item.name" :value="item.id" />
           </el-option-group>
@@ -27,6 +24,11 @@
       <el-form-item label="Должность" prop="position">
         <el-select v-model="form.positionId" filterable placeholder="Выберите должность" @change="SelectPosition">
           <el-option v-for="item in positions" :key="item.id" :label="item.name" :value="item.id" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="Вид занятости" prop="employment">
+        <el-select v-model="form.employmentId" filterable placeholder="Выберите вид занятости">
+          <el-option v-for="item in employments" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="Рабочий телефон">
@@ -65,17 +67,22 @@ import { Get } from "../../scripts/fetch";
 const rules = reactive({
   name: [{ required: true, message: "Введите ФИО", trigger: "blur" }],
   organizationId: [{ required: true, message: "Выберите организацию", trigger: "change" }],
-  levelSort: [{ type: 'number', message: "Уровень сортировки должнен быть числом" }, { required: true, message: 'Введите уровень сортировки' },]
+  levelSort: [
+    { type: "number", message: "Уровень сортировки должнен быть числом" },
+    { required: true, message: "Введите уровень сортировки" },
+  ],
 });
 
 const url = "/employees";
 
 const route = useRoute();
-const router = useRouter()
+const router = useRouter();
 
 const organizations = await Get(`/organizations`);
 const positions = await Get(`/positions`);
 const individuals = await Get(`/individuals`);
+const employments = await Get(`/employments`);
+
 const divisions = ref([]);
 const structure = ref([]);
 const id = route.params.id;
@@ -83,8 +90,9 @@ const id = route.params.id;
 let form = reactive({ levelSort: 0 });
 
 if (id) {
-
-  const object = await Get(`/${url}/${id}`).catch(() => { router.back() })
+  const object = await Get(`/${url}/${id}`).catch(() => {
+    router.back();
+  });
 
   form = reactive(object);
 
@@ -115,9 +123,9 @@ const SelectOrg = async (id) => {
 const SelectIndividual = async (id) => {
   const individual = individuals.find((d) => d.id == id);
 
-  SelectOrg(individual.organizationId)
+  SelectOrg(individual.organizationId);
 
-  form.organizationId = individual.organizationId
+  form.organizationId = individual.organizationId;
   form.name = individual.name;
 };
 
