@@ -8,10 +8,10 @@
     </div>
     <div class="flex-grow"></div>
     <el-space v-if="namePage == 'employeeAll'">
-      <el-button type="primary" :size="'small'" :disabled="disabledButtonUpdate" @click="emits('add-objects')">Добавить</el-button>
-      <el-button type="primary" :size="'small'" :disabled="disabledButtonUpdate" @click="emits('open-dialog')">Множественное изменение</el-button>
+      <el-button type="primary" :size="'small'" :disabled="disabledButtonUpdate" @click="emits('add-objects')">Добавить для изменения</el-button>
+      <el-button type="primary" :size="'small'" @click="emits('open-dialog')">Множественное изменение</el-button>
     </el-space>
-    <el-checkbox v-model="sortByLevel" label="Сортировка по уровню" @change="emits('open-dialog')" v-if="namePage == 'employeeAll'" />
+    <el-checkbox :model-value="sortByLevel" label="Сортировка по уровню" @change="emits('change-sort', $event)" v-if="namePage == 'employeeAll'" />
   </div>
 </template>
 
@@ -27,6 +27,10 @@ const props = defineProps({
   header: {
     type: Boolean,
     default: true,
+  },
+  sortByLevel: {
+    type: Boolean,
+    default: false,
   },
   objectsForBulkUpdate: {
     type: Array,
@@ -44,6 +48,4 @@ const route = useRoute();
 
 const namePage = computed(() => route.name);
 const disabledButtonUpdate = computed(() => props.objectsForBulkUpdate.length == 0);
-
-const sortByLevel = ref(false);
 </script>

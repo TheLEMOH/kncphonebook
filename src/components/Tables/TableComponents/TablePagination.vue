@@ -3,7 +3,7 @@
     class="pagination"
     layout="prev, pager, next"
     :total="data.count"
-    :page-size="20"
+    :page-size="25"
     :current-page="currentPage"
     @current-change="ChangePage"
     :default-current-page="1"

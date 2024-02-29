@@ -17,19 +17,19 @@
       <el-tree :data="structure" default-expand-all :props="treeProps" :expand-on-click-node="false" highlight-current @node-click="NodeClick"> </el-tree>
     </template>
     <template #columns>
-      <el-table-column type="selection" width="55" v-if="client" />
+      <el-table-column type="selection" width="30px" v-if="client" />
       <el-table-column prop="room" label="Кабинет" width="80px">
         <template #header>
           <el-input v-model="filter.room" size="small" placeholder="Каб." clearable />
         </template>
       </el-table-column>
-      <el-table-column label="ФИО" min-width="150">
+      <el-table-column label="ФИО" width="200px">
         <template #header>
           <el-input v-model="filter.name" size="small" placeholder="ФИО" clearable />
         </template>
         <template #default="scope"> {{ scope.row.surname }} {{ scope.row.name }} {{ scope.row.patronymic }} </template>
       </el-table-column>
-      <el-table-column prop="position.name" label="Должность" min-width="100px">
+      <el-table-column prop="position.name" label="Должность" width="150px">
         <template #header>
           <el-input v-model="filter.position" size="small" placeholder="Должность" clearable />
         </template>
@@ -73,7 +73,7 @@
     </template>
   </Table>
 
-  <EmployeeModal :data="objectsForBulkUpdate" :visible="visible" @close="visible = false" @delete-object="DeleteObject"></EmployeeModal>
+  <EmployeeModal :data="objectsForBulkUpdate" :visible="visible" @close="visible = false" @delete-object="DeleteObject" @done="DoneUpdate"></EmployeeModal>
 </template>
 
 <script setup>
@@ -81,8 +81,7 @@ import Table from "./Table.vue";
 import { Get } from "../../scripts/fetch";
 import { ref, computed } from "vue";
 import { useStore } from "vuex";
-import EmployeeModal from "../modals/Employee.vue";
-import { ElMessage } from "element-plus";
+import EmployeeModal from "../Modals/Employee.vue";
 import CreateStructure from "../../scripts/structure";
 
 import Filter from "./scripts/filter";
@@ -111,13 +110,7 @@ const SetFilterValue = (tree) => {
 };
 
 const SearchByLevel = async (byLevel = false) => {
-  filter.value.page = 1;
   filter.value.byLevel = byLevel;
-
-  const searchParams = new URLSearchParams(filter.value).toString();
-  const res = await Get(`/employees/pages?${searchParams}`);
-
-  data.value = res;
 };
 
 const NodeClick = (event, tree) => {
@@ -139,6 +132,10 @@ const DeleteObject = (id) => {
   const index = objectsForBulkUpdate.value.findIndex((element) => element.id == id);
 
   objectsForBulkUpdate.value.splice(index, 1);
+};
+
+const DoneUpdate = () => {
+  filter.value = {};
 };
 </script>
 

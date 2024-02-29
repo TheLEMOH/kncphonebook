@@ -4,11 +4,9 @@
       <slot name="search-menu-header"></slot>
     </div>
 
-    <el-scrollbar>
-      <div class="search-menu-body">
-        <slot name="search-menu-body"></slot>
-      </div>
-    </el-scrollbar>
+    <div class="search-menu-body">
+      <slot name="search-menu-body"></slot>
+    </div>
   </div>
 </template>
 

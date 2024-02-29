@@ -39,7 +39,7 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["close"]);
+const emits = defineEmits(["close", "done"]);
 
 const loading = ref(false);
 
@@ -62,7 +62,10 @@ const Update = async () => {
       type: "success",
       duration: 2000,
     });
+
     loading.value = false;
+
+    emits("done");
   });
 };
 </script>

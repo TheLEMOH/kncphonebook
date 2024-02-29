@@ -44,5 +44,55 @@
 </template>
 
 <script setup>
-const emits = defineEmits(["open-edit", "db-click", "clear-filter", "create"]);
+import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+
+import { Edit, Plus, CircleCloseFilled } from "@element-plus/icons-vue";
+
+const props = defineProps({
+  data: {
+    type: Object,
+    default: { rows: [], count: 0 },
+  },
+  size: {
+    type: String,
+    default: "small",
+  },
+  loading: {
+    type: Boolean,
+    default: false,
+  },
+  add: String,
+  edit: String,
+});
+
+const emits = defineEmits(["open-edit", "db-click", "clear-filter", "create", "select"]);
+
+const store = useStore();
+const router = useRouter();
+
+const client = computed(() => store.getters.client);
+
+const objectsForBulkUpdate = ref([]);
+
+const Create = () => {
+  router.push({ name: props.add });
+};
+
+const OpenEdit = (id) => {
+  router.push({ name: props.edit, params: { id } });
+};
+
+const Dbclick = (event) => {
+  if (client.value) OpenEdit(event.id);
+};
+
+const CrearFilter = () => {
+  emits("clear-filter");
+};
+
+const handleSelectionChange = (objects) => {
+  emits("select", objects);
+};
 </script>
