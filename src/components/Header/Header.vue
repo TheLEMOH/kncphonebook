@@ -11,7 +11,7 @@
     <template v-if="client">
       <el-menu-item index="userAll">Пользователи</el-menu-item>
       <el-menu-item index="PDF">PDF</el-menu-item>
-      <!--    <el-menu-item index="CSV">CSV</el-menu-item> -->
+      <el-menu-item index="CSV">CSV</el-menu-item>
     </template>
     <div class="flex-grow"></div>
     <template v-if="!client">

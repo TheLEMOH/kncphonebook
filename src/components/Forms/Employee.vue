@@ -41,10 +41,12 @@
         <el-input v-model="form.address" maxlength="100" show-word-limit />
       </el-form-item>
       <el-form-item label="Этаж" prop="floor">
-        <el-input v-model="form.floor" maxlength="100" show-word-limit />
+        <el-input-number v-model="form.floor" maxlength="100" show-word-limit @change="SelectFloor" :disabled="loadingRooms" :loading="loadingRooms" />
       </el-form-item>
-      <el-form-item label="Кабинет" prop="room">
-        <el-input v-model="form.room" maxlength="100" show-word-limit />
+      <el-form-item label="Комната" prop="room">
+        <el-select v-model="form.room" filterable placeholder="Выберите комнату" :disabled="loadingRooms" :loading="loadingRooms">
+          <el-option v-for="item in rooms" :key="item.id" :label="item.label" :value="item.label" />
+        </el-select>
       </el-form-item>
       <el-space fill>
         <el-alert type="info" show-icon :closable="false">
@@ -83,11 +85,15 @@ const positions = await Get(`/positions`);
 const individuals = await Get(`/individuals`);
 const employments = await Get(`/employments`);
 
+const rooms = ref([]);
 const divisions = ref([]);
 const structure = ref([]);
+
 const id = route.params.id;
 
 let form = reactive({ levelSort: 0 });
+
+const loadingRooms = ref(false);
 
 if (id) {
   const object = await Get(`/${url}/${id}`).catch(() => {
@@ -97,7 +103,10 @@ if (id) {
   form = reactive(object);
 
   const orgId = form.organizationId;
+  const floor = form.floor;
+
   structure.value = await Get(`/structure?level=2&id=${orgId}`);
+/*   rooms.value = await Get(`/rooms?fl=${floor}`); */
   divisions.value = structure.value[0].divisions;
 }
 
@@ -132,5 +141,13 @@ const SelectIndividual = async (id) => {
 const SelectPosition = async (id) => {
   const position = positions.find((d) => d.id == id);
   form.levelSort = position.levelSort;
+};
+
+const SelectFloor = async (floor) => {
+  loadingRooms.value = true;
+
+  rooms.value = await Get(`/rooms?fl=${floor}`);
+
+  loadingRooms.value = false;
 };
 </script>

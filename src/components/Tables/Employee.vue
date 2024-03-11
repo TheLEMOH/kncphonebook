@@ -34,9 +34,13 @@
           <el-input v-model="filter.position" size="small" placeholder="Должность" clearable />
         </template>
         <template #default="scope">
-          {{ scope.row.position.name }}
-          <template v-if="scope.row.individual.degree">
-            <p>{{ scope.row.individual.degree.name }}</p>
+          <template v-if="scope.row.position">
+            {{ scope.row.position.name }}
+            <template v-if="scope.row.individual">
+              <template v-if="scope.row.individual.degree">
+                <p>{{ scope.row.individual.degree.name }}</p>
+              </template>
+            </template>
           </template>
         </template>
       </el-table-column>
